@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h2>To-Do Details</h2> 
+        {{ todo.name }}
+        {{ todo.completed }}
+        {{ todo.created_at }}
+        <a href="{% url 'todo_update' todo.pk %}">Edit</a>
+        <a href="{% url 'todo_delete' todo.pk %}">Delete</a>
+        <a href="{% url 'todo_list' %}">Home</a>
+</body>
+</html>

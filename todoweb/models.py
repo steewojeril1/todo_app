@@ -6,7 +6,6 @@ from django.contrib.auth.models import User
 class Todo(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)  #mandatory#ensures that if a user is deleted, all their todos are also deleted
     title = models.CharField(max_length=255)  #mandatory
-    description = models.TextField(blank=True, null=True) #optional
     completed = models.BooleanField(default=False) 
     created_at = models.DateTimeField(auto_now_add=True) #automatically set
 

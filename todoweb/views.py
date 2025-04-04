@@ -1,3 +1,90 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
-# Create your views here.
+from todoweb.models import Todo
+from django.views.generic import View
+from todoweb.forms import TodoForm, LoginForm
+from todoweb.decorators import sign_in_required
+from django.utils.decorators import method_decorator
+from django.contrib import messages
+from django.contrib.auth import authenticate,login,logout
+
+
+class CustomLoginView(View):
+    def get(self,request,*args,**kwargs):
+        form=LoginForm()
+        return render(request,'todo/custom_login.html',{'form':form})
+    def post(self,request,*args,**kwargs):
+        form=LoginForm(request.POST)
+        if form.is_valid(): #It checks if all required fields are filled out correctly based on your model's rules.
+            username=form.cleaned_data.get('username')  #cleaned_data is the validated data
+            password=form.cleaned_data.get('password')
+            user=authenticate(request,username=username,password=password)
+            if user:
+                login(request,user)
+                print('user:::',request.user)
+                messages.success(request,'You have been successfully Logged in. Welcome %s' %request.user)
+                return redirect('todo_list')
+            else:
+                messages.error(request,'Incorrect username/password')
+                return render(request,'login.html',{'form':form})
+
+
+def logout_view(request):
+    logout(request)
+    return redirect('custom_login')
+
+
+
+class TodoCreateView(View):
+    def get(self, request, *args, **kwargs):  # when the user opens the form page
+        form = TodoForm()
+        return render(request, 'todo/todo_form.html',{'form':form})
+    def post(self, request, *args, **kwargs): # when the user submits the form 
+        form = TodoForm(request.POST)
+        if form.is_valid(): #It checks if all required fields are filled out correctly based on your model's rules.
+            todo = form.save(commit=False)
+            todo.user = request.user
+            todo.save()
+            messages.success(self.request,'Your todo has been added!!!')
+            return redirect('todo_list')
+
+@method_decorator(sign_in_required, name='dispatch')
+class TodoList(View):
+    def get(self, request, *args, **kwargs):  
+        incompleted_todos = Todo.objects.filter(user = request.user).order_by('-created_at').filter(completed = False)
+        completed_todos = Todo.objects.filter(user = request.user).order_by('-created_at').filter(completed = True)
+        return render(request, 'todo/todo_list.html',{'incompleted_todos':incompleted_todos, 'completed_todos':completed_todos})
+
+@method_decorator(sign_in_required, name='dispatch')
+class TodoUpdateView(View):
+    def get(self, request, *args, **kwargs): 
+        pk=kwargs.get('pk') 
+        todo = Todo.objects.get(pk=pk, user=request.user) #can also use id=pk
+        form = TodoForm(instance=todo)
+        return render(request, 'todo/todo_form.html',{'form':form})
+    def post(self, request, *args, **kwargs): 
+        pk=kwargs.get('pk') 
+        todo = Todo.objects.get(pk=pk, user=request.user)
+        form = TodoForm(request.POST, instance=todo) # instance = todo is given because to edit in that particular todo. else it will create new todo when calling form.save()
+        if form.is_valid(): 
+            todo = form.save(commit=False)
+            todo.user = request.user
+            todo.save()
+            print("entered",request.user)
+            return redirect('todo_list')
+            
+@method_decorator(sign_in_required, name='dispatch')
+class TodoDetailView(View):
+    def get(self,request,*args,**kwargs):
+        pk=kwargs.get('pk')
+        todo=Todo.objects.get(pk=pk)
+        return render(request,'todo/todo_detail.html',{'todo':todo})
+        
+@sign_in_required
+def delete_todo(request, *args, **kwargs):
+    pk =kwargs.get('pk')
+    todo=Todo.objects.get(id=pk)
+    if request.method == 'POST':
+        todo.delete()
+        return redirect('todo_list')
+    return render(request, 'todo/todo_delete.html', {'todo':todo})

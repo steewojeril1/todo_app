@@ -1,0 +1,33 @@
+<h2>My To-Do List</h2>
+<a href="{% url 'todo_create' %}">Add New</a>
+<a href="{% url 'logout' %}">logut</a>
+<ul>
+{% if incompleted_todos%}
+  {% for todo in completed_todos %}
+    <li>
+      <strong>{{ todo.title }}</strong> 
+      {% if todo.completed %}✔{% endif %}
+      <a href="{% url 'todo_detail' todo.pk %}">Detail</a>
+      <a href="{% url 'todo_update' todo.pk %}">Edit</a>
+      <a href="{% url 'todo_delete' todo.pk %}">Delete</a>
+    </li>
+  {% empty %}
+    <li>No to-dos yet.</li>
+  {% endfor %}
+{% endif %}
+
+  {% if incompleted_todos%}
+  <hr>
+  {% for todo in incompleted_todos %}
+    <li>
+      <strong>{{ todo.title }}</strong> 
+      {% if todo.completed %}✔{% endif %}
+      <a href="{% url 'todo_detail' todo.pk %}">Detail</a>
+      <a href="{% url 'todo_update' todo.pk %}">Edit</a>
+      <a href="{% url 'todo_delete' todo.pk %}">Delete</a>
+    </li>
+  {% empty %}
+    <li>No to-dos yet.</li>
+  {% endfor %}
+  {% endif %}
+</ul>
