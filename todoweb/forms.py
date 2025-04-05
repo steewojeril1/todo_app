@@ -8,4 +8,7 @@ class LoginForm(forms.Form):
 class TodoForm(forms.ModelForm):
     class Meta:
         model = Todo
-        fields = ['title', 'completed']
+        fields = ['title', 'completed'] # exclude=('user','created_by)
+        widgets={
+            'title':forms.TextInput(attrs={'class':'form-control'})
+        }
