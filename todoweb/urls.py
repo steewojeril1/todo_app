@@ -1,6 +1,7 @@
 from django.urls import path
 from todoweb import views
 urlpatterns = [
+    path('signup',views.SignupView.as_view(),name='register'),
     path('create/', views.TodoCreateView.as_view(), name='todo_create'),
     path('list/', views.TodoList.as_view(), name='todo_list'),
     path('list/completed/', views.TodoList.as_view(),{'filter':'completed'}, name='completed_todos'),

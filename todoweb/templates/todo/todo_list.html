@@ -4,58 +4,59 @@
 <div class="container">
   <div class="row mt-5">
     <div class="col-3"></div>
+    
     <div class="col-6">
-      <div class="row mb-3 align-items-center">
-        <div class="col-8">
-          <h3 class="mb-0">
-            {% if filter == 'completed' %}
-              Completed Todos
-            {% elif filter == 'incompleted' %}
-              Incompleted Todos
-            {% else %}
-              All Todos...
-            {% endif %}
-          </h3>
-        </div>
-        <div class="col-4 text-end">
-          <span class="badge fs-5 
-            {% if filter == 'completed' %}
-              bg-success
-            {% elif filter == 'incompleted' %}
-              bg-danger
-            {% else %}
-              bg-primary
-            {% endif %}
-          ">
-            {{ count }}
-          </span>
-        </div>
-        
-      </div>
-      
-
       {% if todos %}
-        <a href="{% url 'todo_create' %}" class="btn btn-outline-primary">Create</a>
-        <table class="table">
-          <tr>
-            <th>Task</th>
-            <th>Completed</th>
-            <th>Action</th>
-          </tr>
+        <div class="row mb-3 align-items-center">
+          <div class="col-8">
+            <h3 class="mb-0">
+              {% if filter == 'completed' %}
+                Completed Todos
+              {% elif filter == 'incompleted' %}
+                Incompleted Todos
+              {% else %}
+                All Todos...
+              {% endif %}
+            </h3>
+          </div>
+          <div class="col-4 text-end">
+            <span class="badge fs-5 
+              {% if filter == 'completed' %}
+                bg-success
+              {% elif filter == 'incompleted' %}
+                bg-danger
+              {% else %}
+                bg-primary
+              {% endif %}
+            ">
+              {{ count }}
+            </span>
+          </div>
+        </div>
 
-          {% if todos %}
+        <a href="{% url 'todo_create' %}" class="btn btn-outline-primary mb-3">Create</a>
+
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Task</th>
+              <th>Completed</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
             {% for todo in todos %}
               <tr>
                 <td>{{ todo.title }}</td>
-                <td>{% if todo.completed == True %}✔{% else %}✘{% endif %}</td>
+                <td>{% if todo.completed %}✔{% else %}✘{% endif %}</td>
                 <td>
-                  <a href="{% url 'todo_update' todo.pk %}" class="btn btn-outline-primary">Edit</a>
-                  <a href="{% url 'todo_detail' todo.pk %}" class="btn btn-outline-warning">Details</a>
-                  <a href="{% url 'todo_delete' todo.pk %}" class="btn btn-outline-danger">Delete</a>
+                  <a href="{% url 'todo_update' todo.pk %}" class="btn btn-outline-primary btn-sm">Edit</a>
+                  <a href="{% url 'todo_detail' todo.pk %}" class="btn btn-outline-warning btn-sm">Details</a>
+                  <a href="{% url 'todo_delete' todo.pk %}" class="btn btn-outline-danger btn-sm">Delete</a>
                 </td>
               </tr>
             {% endfor %}
-          {% endif %}
+          </tbody>
         </table>
 
       {% else %}
@@ -63,8 +64,8 @@
         <a href="{% url 'todo_create' %}" class="btn btn-outline-primary">Add Todo</a>
         <a href="{% url 'todo_list' %}" class="btn btn-outline-secondary">Home</a>
       {% endif %}
-
     </div>
+
     <div class="col-3"></div>
   </div>
 </div>

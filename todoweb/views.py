@@ -1,12 +1,22 @@
 from django.shortcuts import render, redirect
 
 from todoweb.models import Todo
-from django.views.generic import View
-from todoweb.forms import TodoForm, LoginForm
+from django.views.generic import View, CreateView
+from todoweb.forms import TodoForm, LoginForm, RegistrationForm
 from todoweb.decorators import sign_in_required
 from django.utils.decorators import method_decorator
 from django.contrib import messages
 from django.contrib.auth import authenticate,login,logout
+from django.contrib.auth.models import User
+from django.urls import reverse_lazy
+
+
+
+class SignupView(CreateView):
+    model = User
+    form_class = RegistrationForm
+    template_name= 'todo/registration.html'
+    success_url=reverse_lazy('custom_login')
 
 
 class CustomLoginView(View):
@@ -26,7 +36,7 @@ class CustomLoginView(View):
                 return redirect('todo_list')
             else:
                 messages.error(request,'Incorrect username/password')
-                return render(request,'login.html',{'form':form})
+                return render(request,'todo/custom_login.html',{'form':form})
 
 
 def logout_view(request):
