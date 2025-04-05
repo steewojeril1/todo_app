@@ -17,7 +17,7 @@ class CustomLoginView(View):
         form=LoginForm(request.POST)
         if form.is_valid(): #It checks if all required fields are filled out correctly based on your model's rules.
             username=form.cleaned_data.get('username')  #cleaned_data is the validated data
-            password=form.cleaned_data.get('password')
+            password=form.cleaned_data.get('password')# use cleaned_data if we are using regular forms (not model forms)(if we want to access individual form field values without necessarily saving the model.)
             user=authenticate(request,username=username,password=password)
             if user:
                 login(request,user)
@@ -42,7 +42,7 @@ class TodoCreateView(View):
     def post(self, request, *args, **kwargs): # when the user submits the form 
         form = TodoForm(request.POST)
         if form.is_valid(): #It checks if all required fields are filled out correctly based on your model's rules.
-            todo = form.save(commit=False)
+            todo = form.save(commit=False) #used when modelform is used.(If normal form, we need to take each data from cleaned_Data and explicitly create object with that)
             todo.user = request.user
             todo.save()
             messages.success(self.request,'Your todo has been added!!!')
@@ -51,9 +51,14 @@ class TodoCreateView(View):
 @method_decorator(sign_in_required, name='dispatch')
 class TodoList(View):
     def get(self, request, *args, **kwargs):  
-        incompleted_todos = Todo.objects.filter(user = request.user).order_by('-created_at').filter(completed = False)
-        completed_todos = Todo.objects.filter(user = request.user).order_by('-created_at').filter(completed = True)
-        return render(request, 'todo/todo_list.html',{'incompleted_todos':incompleted_todos, 'completed_todos':completed_todos})
+        filter = kwargs.get('filter','all')
+        if filter == 'completed':
+            todos = Todo.objects.filter(user=request.user, completed = True).order_by('-created_at')
+        elif filter == 'incompleted':
+            todos = Todo.objects.filter(user=request.user, completed = False).order_by('-created_at')
+        else:
+            todos = Todo.objects.filter(user=request.user).order_by('completed', '-created_at')
+        return render(request, 'todo/todo_list.html',{'todos':todos, 'count':todos.count(), 'filter':filter})
 
 @method_decorator(sign_in_required, name='dispatch')
 class TodoUpdateView(View):
@@ -86,5 +91,6 @@ def delete_todo(request, *args, **kwargs):
     todo=Todo.objects.get(id=pk)
     if request.method == 'POST':
         todo.delete()
+        messages.success(request,'Your todo has been deleted')
         return redirect('todo_list')
     return render(request, 'todo/todo_delete.html', {'todo':todo})

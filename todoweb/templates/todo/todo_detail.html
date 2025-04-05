@@ -1,17 +1,27 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <h2>To-Do Details</h2> 
-        {{ todo.name }}
-        {{ todo.completed }}
-        {{ todo.created_at }}
-        <a href="{% url 'todo_update' todo.pk %}">Edit</a>
-        <a href="{% url 'todo_delete' todo.pk %}">Delete</a>
-        <a href="{% url 'todo_list' %}">Home</a>
-</body>
-</html>
+{%extends 'todo/base.html'%}
+{%block content%}
+<div class="container">
+    <div class="row mt-5">
+        <div class="col-3"></div>
+        <div class="col-6">
+            <table class="table">
+                <tr>
+                    <th>Task</th>
+                    <th>Created Date</th>
+                    <th>Created Status</th>
+                </tr>
+            <tr>
+                <td>{{todo.title}}</td>
+                <td>{{todo.created_at}}</td>
+                <td>{% if todo.completed %}✔{% else %}✘{% endif %}</td>
+            </tr>            
+        </table>   
+        <a href="{%url 'todo_list'%}" class="btn btn-outline-secondary">Go Back</a>
+        <a href="{% url 'todo_update' todo.pk %}" class="btn btn-outline-primary">Edit</a>
+        <a href="{% url 'todo_delete' todo.pk %}" class="btn btn-outline-danger">Delete</a>
+    </div>
+        <div class="col-3"></div>
+    </div>
+</div>
+
+{%endblock%}

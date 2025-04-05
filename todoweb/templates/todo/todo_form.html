@@ -1,17 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <h2>{% if form.instance.pk %}Edit{% else %}Create{% endif %} To-Do</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Save</button>
-    </form>
-    
+
 </body>
 </html>
+{%extends 'todo/base.html'%}
+{%block content%}
+
+<div class="container">
+    <div class="row mt-5">
+        <div class="col-3"></div>
+        <div class="col-6 border">
+            <h2>{% if form.instance.pk %}Edit{% else %}Create{% endif %} To-Do</h2>
+            <form action="" class="mt-5" method="post">
+               {%csrf_token%}
+               {{form.as_p}}
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-info">Add</button>
+                    <a href="{% url 'todo_list' %}" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+        <div class="col-3"></div>
+    </div>
+</div>
+{%endblock%}
