@@ -10,10 +10,13 @@ from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.models import User
 from django.urls import reverse_lazy
 
+from django.contrib.auth import get_user_model # this will return value in AUTH_USER_MODEL in settings
+
+
 
 
 class SignupView(CreateView):
-    model = User
+    model = get_user_model()
     form_class = RegistrationForm
     template_name= 'todo/registration.html'
     success_url=reverse_lazy('custom_login')

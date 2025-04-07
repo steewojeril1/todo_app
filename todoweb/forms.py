@@ -1,13 +1,13 @@
 from django import forms
 from todoweb.models import Todo 
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model # this will return value in AUTH_USER_MODEL in settings
 
 class RegistrationForm(UserCreationForm ):
     password1=forms.CharField(widget=forms.PasswordInput(attrs={'class':'form-control'}))
     password2=forms.CharField(widget=forms.PasswordInput(attrs={'class':'form-control'}))
     class Meta:
-        model=User
+        model=get_user_model()
         fields=['first_name','last_name','email','username','password1','password2']
 
 
