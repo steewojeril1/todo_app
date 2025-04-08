@@ -1,10 +1,10 @@
 {% extends 'todo/base.html' %}
-{% block content %}
 
+{% block content %}
 <div class="container">
   <div class="row mt-5">
     <div class="col-3"></div>
-    
+
     <div class="col-6">
       {% if todos %}
         <div class="row mb-3 align-items-center">
@@ -15,12 +15,12 @@
               {% elif filter == 'incompleted' %}
                 Incompleted Todos
               {% else %}
-                All Todos...
+                All Todos
               {% endif %}
             </h3>
           </div>
           <div class="col-4 text-end">
-            <span class="badge fs-5 
+            <span class="badge fs-5
               {% if filter == 'completed' %}
                 bg-success
               {% elif filter == 'incompleted' %}
@@ -34,22 +34,28 @@
           </div>
         </div>
 
-        <a href="{% url 'todo_create' %}" class="btn btn-outline-primary mb-3">Create</a>
+        <a href="{% url 'todo_create' %}" class="btn btn-outline-primary mb-3">+ Create New Todo</a>
 
         <table class="table">
-          <thead>
+          <thead class="table-light">
             <tr>
               <th>Task</th>
-              <th>Completed</th>
-              <th>Action</th>
+              <th>Status</th>
+              <th class="text-center">Action</th>
             </tr>
           </thead>
           <tbody>
             {% for todo in todos %}
               <tr>
                 <td>{{ todo.title }}</td>
-                <td>{% if todo.completed %}✔{% else %}✘{% endif %}</td>
                 <td>
+                  {% if todo.completed %}
+                    <span class="text-success">✔</span>
+                  {% else %}
+                    <span class="text-danger">✘</span>
+                  {% endif %}
+                </td>
+                <td class="text-center">
                   <a href="{% url 'todo_update' todo.pk %}" class="btn btn-outline-primary btn-sm">Edit</a>
                   <a href="{% url 'todo_detail' todo.pk %}" class="btn btn-outline-warning btn-sm">Details</a>
                   <a href="{% url 'todo_delete' todo.pk %}" class="btn btn-outline-danger btn-sm">Delete</a>
@@ -60,14 +66,14 @@
         </table>
 
       {% else %}
-        <h2>No Todos!!!</h2>
-        <a href="{% url 'todo_create' %}" class="btn btn-outline-primary">Add Todo</a>
-        <a href="{% url 'todo_list' %}" class="btn btn-outline-secondary">Home</a>
+        <div class="text-center">
+          <h2>No Todos Found</h2>
+          <a href="{% url 'todo_create' %}" class="btn btn-outline-primary mt-3">+ Add Todo</a>
+        </div>
       {% endif %}
     </div>
 
     <div class="col-3"></div>
   </div>
 </div>
-
 {% endblock %}

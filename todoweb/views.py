@@ -47,7 +47,7 @@ def logout_view(request):
     return redirect('custom_login')
 
 
-
+@method_decorator(sign_in_required, name='dispatch')
 class TodoCreateView(View):
     def get(self, request, *args, **kwargs):  # when the user opens the form page
         form = TodoForm()
