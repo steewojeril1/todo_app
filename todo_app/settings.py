@@ -10,12 +10,12 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
-from dotenv import load_dotenv
-import os
-
-load_dotenv()  # Load environment variables from .env
 
 from pathlib import Path
+
+
+from decouple import config
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,10 +25,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY')
-
+SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG') == "True"   # os.getenv("DEBUG", "True") retrieves the DEBUG value as a string from .env.
+# All environment variables (even numbers or booleans) are stored as strings in .env files . 
+# So you need to cast them to their correct type when you use them in your code.
+DEBUG = config('DEBUG',cast=bool,default=False) # becomes: True (boolean)
+# default -if env variable is not found
 
 ALLOWED_HOSTS = []
 
