@@ -48,9 +48,9 @@
             <div class="border-end bg-white" id="sidebar-wrapper">
                 <div class="sidebar-heading border-bottom bg-light">Todo</div>
                 <div class="list-group list-group-flush">
-                    <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'todo_list'%}">All Todos</a>
-                    <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'completed_todos'%}">Completed Todos</a>
-                    <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'incompleted_todos'%}">Incompleted Todos</a>
+                    <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'todo_list'%}?filter=all">All Todos</a>
+                    <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'completed_todos'%}?filter=completed">Completed Todos</a>
+                    <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'incompleted_todos'%}?filter=incompleted">Incompleted Todos</a>
                 </div>
             </div>
             <!-- Page content wrapper-->
