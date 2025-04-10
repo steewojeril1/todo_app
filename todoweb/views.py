@@ -18,9 +18,13 @@ from django.contrib.auth import get_user_model # this will return value in AUTH_
 class SignupView(CreateView):
     model = get_user_model()
     form_class = RegistrationForm
-    template_name= 'todo/registration.html'
-    success_url=reverse_lazy('custom_login')
+    template_name = 'todo/registration.html'
+    success_url = reverse_lazy('todo_list')  # this will be used by super().form_valid()
 
+    def form_valid(self, form):  # If form.is_valid() returns True
+            response = super().form_valid(form)  # <== response will get success_url
+            login(self.request, self.object)     # <== User is logged in
+            return response                      # <== Redirect to success_url
 
 class CustomLoginView(View):
     def get(self,request,*args,**kwargs):
@@ -56,6 +60,14 @@ class TodoCreateView(View):
         form = TodoForm(request.POST)
         if form.is_valid(): #It checks if all required fields are filled out correctly based on your model's rules.
             todo = form.save(commit=False) #used when modelform is used.(If normal form, we need to take each data from cleaned_Data and explicitly create object with that)
+            '''
+             # You manually create the model instance
+                todo = Todo.objects.create(
+                title=title,
+                description=description,
+                user=request.user  # add extra fields manually
+            )
+            '''
             todo.user = request.user
             todo.save()
             messages.success(self.request,'Your todo has been added!!!')
@@ -85,9 +97,7 @@ class TodoUpdateView(View):
         todo = Todo.objects.get(pk=pk, user=request.user)
         form = TodoForm(request.POST, instance=todo) # instance = todo is given because to edit in that particular todo. else it will create new todo when calling form.save()
         if form.is_valid(): 
-            todo = form.save(commit=False)
-            todo.user = request.user
-            todo.save()
+            form.save()
             print("entered",request.user)
             return redirect('todo_list')
             
