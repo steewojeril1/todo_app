@@ -94,16 +94,6 @@ class TodoList(View):
         else:
             todos = Todo.objects.filter(user=request.user).order_by('completed', '-created_at')
         return render(request, 'todo/todo_list.html',{'todos':todos, 'count':todos.count(), 'filter':filter_type})
-        # return Todo.objects.filter(user=self.request.user).order_by('completed', '-created_at')
- 
-        # filter = kwargs.get('filter','all')
-        # if filter == 'completed':
-        #     todos = Todo.objects.filter(user=request.user, completed = True).order_by('-created_at')
-        # elif filter == 'incompleted':
-        #     todos = Todo.objects.filter(user=request.user, completed = False).order_by('-created_at')
-        # else:
-        #     todos = Todo.objects.filter(user=request.user).order_by('completed', '-created_at')
-
 @method_decorator(sign_in_required, name='dispatch')
 class TodoUpdateView(View):
     def get(self, request, *args, **kwargs): 
