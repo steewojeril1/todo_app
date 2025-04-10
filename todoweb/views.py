@@ -12,26 +12,28 @@ from django.urls import reverse_lazy
 
 from django.contrib.auth import get_user_model # this will return value in AUTH_USER_MODEL in settings
 
-
-
-
-class SignupView(CreateView):
-    model = get_user_model()
-    form_class = CustomSignupForm
-    '''
+class SignupView(View):
+    def get(self, request, *args, **kwargs):
+        form = CustomSignupForm()  # custom form, or use UserCreationForm
+        '''
         The default UserCreationForm only includes:
         username
         password1
         password2
         to include first_name,last_name,email we need to create a form -that is CustomSignupForm  
-    '''
-    template_name = 'todo/signup.html'
-    success_url = reverse_lazy('todo_list')  # this will be used by super().form_valid()
-
-    def form_valid(self, form):  # If form.is_valid() returns True
-            response = super().form_valid(form)  # <== response will get success_url
-            login(self.request, self.object)     # <== User is logged in
-            return response                      # <== Redirect to success_url
+        '''
+        return render(request, "todo/signup.html", {'form': form})
+        
+    def post(self, request, *args, **kwargs):
+        form = CustomSignupForm(request.POST)
+        if form.is_valid():
+            user = form.save()  # Secure: Hashes the password automatically # written inside UserCreationForm
+            login(request, user)  # automatically logs in the new user
+            messages.success(request, 'Your profile has been created and you are now logged in!')
+            return redirect('todo_list') 
+        else:
+            messages.error(request, 'Something went wrong. Please check the form.')
+            return render(request, 'todo/signup.html', {'form': form})
 
 
 class CustomLoginView(View):
