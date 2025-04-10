@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 
 from todoweb.models import Todo
 from django.views.generic import View, CreateView
-from todoweb.forms import TodoForm, LoginForm, RegistrationForm
+from todoweb.forms import TodoForm, LoginForm, CustomSignupForm
 from todoweb.decorators import sign_in_required
 from django.utils.decorators import method_decorator
 from django.contrib import messages
@@ -17,14 +17,22 @@ from django.contrib.auth import get_user_model # this will return value in AUTH_
 
 class SignupView(CreateView):
     model = get_user_model()
-    form_class = RegistrationForm
-    template_name = 'todo/registration.html'
+    form_class = CustomSignupForm
+    '''
+        The default UserCreationForm only includes:
+        username
+        password1
+        password2
+        to include first_name,last_name,email we need to create a form -that is CustomSignupForm  
+    '''
+    template_name = 'todo/signup.html'
     success_url = reverse_lazy('todo_list')  # this will be used by super().form_valid()
 
     def form_valid(self, form):  # If form.is_valid() returns True
             response = super().form_valid(form)  # <== response will get success_url
             login(self.request, self.object)     # <== User is logged in
             return response                      # <== Redirect to success_url
+
 
 class CustomLoginView(View):
     def get(self,request,*args,**kwargs):

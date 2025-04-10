@@ -3,7 +3,7 @@ from todoweb.models import Todo
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model # this will return value in AUTH_USER_MODEL in settings
 
-class RegistrationForm(UserCreationForm ):
+class CustomSignupForm(UserCreationForm ):
     password1=forms.CharField(widget=forms.PasswordInput(attrs={'class':'form-control'})) # password1 and password2 are just form fields, not model fields
     password2=forms.CharField(widget=forms.PasswordInput(attrs={'class':'form-control'})) # So we must style them separately outside the Meta class
     class Meta:
@@ -15,12 +15,6 @@ class RegistrationForm(UserCreationForm ):
             'email': forms.EmailInput(attrs={'class': 'form-control'}),
             'username': forms.TextInput(attrs={'class': 'form-control'}),
         }
-        '''
-        The default UserCreationForm only includes:
-        username
-        password1
-        password2
-        '''
 
 
 class LoginForm(forms.Form):
