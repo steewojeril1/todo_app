@@ -43,17 +43,25 @@ class TodoSerializer(serializers.Serializer):
     
 
 
-    # class CustomUserSerializer(serializers.Serializer):
-    #     id = serializers.IntegerField(read_only=True)
-    #     username = serializers.CharField()
-    #     email = serializers.EmailField()
-    #     phone = serializers.CharField(allow_blank=True)
-    #     '''  
-    #         required=False - By default, fields are required in serializers. Even if `null=True` is set in the model, you must specify `required=False` in the serializer to make the field optional.
+class CustomUserSerializer(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True)
+    username = serializers.CharField()
+    email = serializers.EmailField()
+    phone = serializers.CharField(allow_blank=True)
+    '''  
+        required=False - By default, fields are required in serializers. Even if `null=True` is set in the model, you must specify `required=False` in the serializer to make the field optional.
 
-    #         {}                     ✅ (phone is skipped)
-    #         {"phone": "123456"}    ✅ (non-empty string)
-    #         allow_blank=True - You can give an empty string ("") as its value without any validation error.
-    #         {"phone": ""}          ✅ (empty string allowed)
-    #         '''
-    #     address = serializers.CharField(allow_blank=True)
+        {}                     ✅ (phone is skipped)
+        {"phone": "123456"}    ✅ (non-empty string)
+        allow_blank=True - You can give an empty string ("") as its value without any validation error.
+        {"phone": ""}          ✅ (empty string allowed)
+        '''
+    address = serializers.CharField(allow_blank=True)
+
+    def update(self, instance, validated_data):
+        # For PUT/PATCH requests
+        instance.username = validated_data.get('username', instance.username) # instance - existing data
+        instance.email = validated_data.get('email', instance.email)
+        instance.phone = validated_data.get('phone', instance.phone)
+        instance.save()
+        return instance

@@ -1,6 +1,6 @@
 
-from .models import Todo,CustomUser
-from .serializers import TodoSerializer, SignupSerializer
+from .models import Todo
+from .serializers import TodoSerializer, SignupSerializer, CustomUserSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
@@ -39,15 +39,6 @@ class TodoListCreate(APIView):
 
 
 class TodoDetail(APIView):
-    def get_object(self, pk, user): # custom method
-        try:
-            todo = Todo.objects.get(pk=pk, user = user)
-            return todo
-        except:
-            return Response({"Todo not found"}, status=status.HTTP_404_NOT_FOUND)
-
-
-class TodoDetail(APIView):
 
     permission_classes = [permissions.IsAuthenticated]  # Ensures request.user is available
 
@@ -63,9 +54,9 @@ class TodoDetail(APIView):
         serializer = TodoSerializer(todo)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def put(self, request, *args, **kwargs):
+    def put(self, request, *args, **kwargs): # Full update – all fields must be provided
         todo = self.get_object(kwargs['pk'], request.user)
-        serializer = TodoSerializer(todo, data=request.data, partial=True)  # partial(not required to send all fields)
+        serializer = TodoSerializer(todo, data=request.data)  
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -81,3 +72,20 @@ class TodoDetail(APIView):
 But in API apps, we usually add /api/user/ because:
 -We need a way to get the currently logged-in user's info.
 -Frontend apps (like React or mobile apps) often use this.'''
+
+class UserAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        # User.objects.get(pk=request.user.id)  #  not necessary. You’re not editing other users, just the logged-in user — so there's no need to pass a pk in the URL or retrieve another user.
+        serializer = CustomUserSerializer(request.user)
+        return Response(serializer.data)
+
+    def patch(self, request): #  Partial update – only send fields you want to change
+        serializer = CustomUserSerializer(instance=request.user, data=request.data, partial=True) # partial(not required to send all fields)
+        if serializer.is_valid():
+            for field, value in serializer.validated_data.items():
+                setattr(request.user, field, value)
+            request.user.save()
+            return Response({'message': 'Profile partially updated', 'user': serializer.data})
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
