@@ -34,6 +34,13 @@ class TodoSerializer(serializers.Serializer):
         user = self.context['user']  # access request.user
         return Todo.objects.create(user=user, **validated_data)
     
+    def update(self, instance, validated_data):
+        # For PUT/PATCH requests
+        instance.title = validated_data.get('title', instance.title) # instance - existing data
+        instance.completed = validated_data.get('completed', instance.completed)
+        instance.save()
+        return instance
+    
 
 
     # class CustomUserSerializer(serializers.Serializer):

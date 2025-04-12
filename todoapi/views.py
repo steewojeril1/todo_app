@@ -3,7 +3,9 @@ from .models import Todo,CustomUser
 from .serializers import TodoSerializer, SignupSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, permissions
+from rest_framework.exceptions import NotFound
+
 
 
 
@@ -36,6 +38,43 @@ class TodoListCreate(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class TodoDetail(APIView):
+    def get_object(self, pk, user): # custom method
+        try:
+            todo = Todo.objects.get(pk=pk, user = user)
+            return todo
+        except:
+            return Response({"Todo not found"}, status=status.HTTP_404_NOT_FOUND)
+
+
+class TodoDetail(APIView):
+
+    permission_classes = [permissions.IsAuthenticated]  # Ensures request.user is available
+
+    def get_object(self, pk, user):
+        try:
+            return Todo.objects.get(pk=pk, user=user)
+        except Todo.DoesNotExist:
+            raise NotFound("Todo not found")
+
+    def get(self, request, *args, **kwargs):
+        print(kwargs['pk'],'....................')
+        todo = self.get_object(kwargs['pk'], request.user)
+        serializer = TodoSerializer(todo)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def put(self, request, *args, **kwargs):
+        todo = self.get_object(kwargs['pk'], request.user)
+        serializer = TodoSerializer(todo, data=request.data, partial=True)  # partial(not required to send all fields)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, *args, **kwargs):
+        todo = self.get_object(kwargs['pk'], request.user)
+        todo.delete()
+        return Response({"message": "Todo has been deleted"}, status=status.HTTP_204_NO_CONTENT)        
 
 
 '''we dont haave this view in web app . you can add that but not necessry.
