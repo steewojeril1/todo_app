@@ -1,11 +1,19 @@
 
 from .models import Todo,CustomUser
-from .serializers import TodoSerializer
+from .serializers import TodoSerializer, SignupSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
 
+
+class SignupView(APIView):
+    def post(self,request):
+        serializer = SignupSerializer(data = request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'message':'user created succesfully'}, status=status.HTTP_201_CREATED)
+        return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
 
 
 
@@ -26,6 +34,7 @@ class TodoListCreate(APIView):
             serializer.save()     # Save as Python model instance
             return Response(serializer.data, status=status.HTTP_201_CREATED)  # .data ➡️ Python dict ➡️ DRF converts to JSON
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 

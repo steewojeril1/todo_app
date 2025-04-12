@@ -1,20 +1,21 @@
 # from .models import Todo
 from rest_framework import serializers
 from .models import Todo
-# class CustomUserSerializer(serializers.Serializer):
-#     id = serializers.IntegerField(read_only=True)
-#     username = serializers.CharField()
-#     email = serializers.EmailField()
-#     phone = serializers.CharField(allow_blank=True)
-#     '''  
-#         required=False - By default, fields are required in serializers. Even if `null=True` is set in the model, you must specify `required=False` in the serializer to make the field optional.
 
-#         {}                     ✅ (phone is skipped)
-#         {"phone": "123456"}    ✅ (non-empty string)
-#         allow_blank=True - You can give an empty string ("") as its value without any validation error.
-#         {"phone": ""}          ✅ (empty string allowed)
-#         '''
-#     address = serializers.CharField(allow_blank=True)
+from django.contrib.auth import get_user_model
+
+User = get_user_model() # this will return value in AUTH_USER_MODEL in settings
+
+class SignupSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True) # write only
+
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'password', 'first_name', 'last_name', 'phone', 'address']
+
+    def create(self, validated_data):
+        return User.objects.create_user(**validated_data)   # to hash the password use create_uer()
+
 
 class TodoSerializer(serializers.Serializer):
     '''
@@ -28,7 +29,24 @@ class TodoSerializer(serializers.Serializer):
     created_at = serializers.DateTimeField(read_only = True)
 
 
-    # ModelSerialwhen using a ModelSerializer, this would automatically save the instance to the database
+    # ModelSerialwhen using a ModelSerializer, this would automatically save the instance to the database. 
     def create(self, validated_data):   # this is because we are passing user in serializer.save()
         user = self.context['user']  # access request.user
         return Todo.objects.create(user=user, **validated_data)
+    
+
+
+    # class CustomUserSerializer(serializers.Serializer):
+    #     id = serializers.IntegerField(read_only=True)
+    #     username = serializers.CharField()
+    #     email = serializers.EmailField()
+    #     phone = serializers.CharField(allow_blank=True)
+    #     '''  
+    #         required=False - By default, fields are required in serializers. Even if `null=True` is set in the model, you must specify `required=False` in the serializer to make the field optional.
+
+    #         {}                     ✅ (phone is skipped)
+    #         {"phone": "123456"}    ✅ (non-empty string)
+    #         allow_blank=True - You can give an empty string ("") as its value without any validation error.
+    #         {"phone": ""}          ✅ (empty string allowed)
+    #         '''
+    #     address = serializers.CharField(allow_blank=True)
